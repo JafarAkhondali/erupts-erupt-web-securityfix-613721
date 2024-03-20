@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@angular/core";
+import {APP_INITIALIZER, Inject, Injectable, Provider} from "@angular/core";
 import {SettingsService, TitleService} from "@delon/theme";
 import {DA_SERVICE_TOKEN, ITokenService} from "@delon/auth";
 
@@ -12,10 +12,18 @@ import {NzIconService} from "ng-zorro-antd/icon";
 import {ReuseTabService} from "@delon/abc/reuse-tab";
 import {I18NService} from "../i18n/i18n.service";
 
-/**
- * 用于应用启动时
- * 一般用来获取应用所需要的基础数据等
- */
+export function provideStartup(): Provider[] {
+    return [
+        StartupService,
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (startupService: StartupService) => () => startupService.load(),
+            deps: [StartupService],
+            multi: true
+        }
+    ];
+}
+
 @Injectable()
 export class StartupService {
     constructor(iconSrv: NzIconService,
